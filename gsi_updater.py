@@ -1,3 +1,8 @@
+"""
+機能名:  GSIアップデーター
+機能概要: ダウンロードしたGSIを解凍し、インストールまでを行う
+"""
+
 import os
 import sys
 import glob
@@ -14,6 +19,14 @@ FILE_TYPE = Literal["xz", "img"]
 
 
 def search_gsi_img(filetype: FILE_TYPE) -> tuple[bool, list[str, str]]:
+    """ダウンロードしたGSI(**.img.xz)を探索
+
+    Args:
+        filetype (FILE_TYPE): ファイルの拡張子
+
+    Returns:
+        tuple[bool, list[str, str]]: 関数実行結果と探索した結果を返す
+    """
     try:
         current_work_dir = os.getcwd()
         gsi_img_xz = list(
@@ -40,9 +53,10 @@ def main():
         if gsi_imgs[0].split("/")[-1].split("-")[:4] == GSI_TYPE:
             subprocess.run("adb reboot bootloader", shell=True)
             subprocess.run("fastboot reboot fastboot", shell=True)
-            subprocess.run("fastboot flash system  %s" % gsi_imgs[0], shell=True)  # fmt: skip
+            subprocess.run(
+                "fastboot flash system  %s" % gsi_imgs[0], shell=True
+                )  # fmt: skip
             subprocess.run("fastboot reboot", shell=True)
-        # break
         return
 
 
