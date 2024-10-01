@@ -1,0 +1,11 @@
+# docker-compose.yml
+version: '2.1'
+services:
+  app:
+    build: .
+    image: gsi_updater
+    container_name: gsi_updater_container
+    command: tail -f /dev/null
+    volumes:
+      - ./app/:/usr/local/app
+      - ./downloads/:/usr/local/downloads

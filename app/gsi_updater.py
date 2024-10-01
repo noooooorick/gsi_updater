@@ -1,6 +1,6 @@
 """
-機能名:  GSIアップデーター
-機能概要: ダウンロードしたGSIを解凍し、インストールまでを行う
+app name:  GSI updater
+summary: Extract and install the downloaded your_gsi_img_name.xz.img.
 """
 
 import os
@@ -16,23 +16,23 @@ DOT_XZ: str = ".xz"
 IMG_XZ: list[str, str] = ["img", "xz"]
 GSI_TYPE: list[str, str] = ["aosp", "arm64", "ab", "gapps"]
 FILE_TYPE = Literal["xz", "img"]
+DOWNLOADS_DIR: str = r"/downloads/"
 
 
 def search_gsi_img(filetype: FILE_TYPE) -> tuple[bool, list[str, str]]:
-    """ダウンロードしたGSI(**.img.xz)を探索
+    """search GSI(**.img.xz)
 
     Args:
-        filetype (FILE_TYPE): ファイルの拡張子
+        filetype (FILE_TYPE): file extention
 
     Returns:
-        tuple[bool, list[str, str]]: 関数実行結果と探索した結果を返す
+        tuple[bool, list[str, str]]: results of the execution and found files.
     """
     try:
-        current_work_dir = os.getcwd()
         gsi_img_xz = list(
             filter(
                 lambda gsi: pathlib.Path(gsi).suffix == filetype,
-                glob.glob(current_work_dir + "/**", recursive=True)  # fmt: skip
+                glob.glob(DOWNLOADS_DIR + "**", recursive=True)  # fmt: skip
             )
         )
         return True, gsi_img_xz
@@ -40,9 +40,10 @@ def search_gsi_img(filetype: FILE_TYPE) -> tuple[bool, list[str, str]]:
         return False, None
 
 
-def main():
+def exec_flash():
     ret, gsi_img_xz_list = search_gsi_img(DOT_XZ)
-    if ret and gsi_img_xz_list is not None:
+
+    if ret and any(gsi_img_xz_list):
         reversed_gsi_img_xz_list = sorted(gsi_img_xz_list, reverse=True)
         gsi_img_xz = reversed_gsi_img_xz_list[0]
 
@@ -50,21 +51,21 @@ def main():
             subprocess.run("unxz %s" % gsi_img_xz, shell=True)
 
         _, gsi_imgs = search_gsi_img(IMG)
-        if gsi_imgs[0].split("/")[-1].split("-")[:4] == GSI_TYPE:
+        if gsi_imgs[0].split(os.sep)[-1].split("-")[:4] == GSI_TYPE:
             subprocess.run("adb reboot bootloader", shell=True)
             subprocess.run("fastboot reboot fastboot", shell=True)
-            subprocess.run(
-                "fastboot flash system  %s" % gsi_imgs[0], shell=True
-                )  # fmt: skip
+            subprocess.run("fastboot flash system  %s" % gsi_imgs[0], shell=True)  # fmt: skip
             subprocess.run("fastboot reboot", shell=True)
         return
+    else:
+        raise IndexError
 
 
 if __name__ == "__main__":
     try:
-        main()
-        sys.stdout.writelines("%s" % "all done!!")
-
+        exec_flash()
     except Exception as exc:
         sys.stdout.writelines("%s" % exc)
         raise exc
+    else:
+        sys.stdout.writelines("%s" % "all done!!")
