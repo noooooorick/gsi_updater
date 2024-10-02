@@ -10,6 +10,7 @@ import pathlib
 import subprocess
 from typing import Literal
 
+from termcolor import colored
 
 IMG: str = ".img"
 DOT_XZ: str = ".xz"
@@ -64,8 +65,11 @@ def exec_flash():
 if __name__ == "__main__":
     try:
         exec_flash()
+    except IndexError:
+        sys.stdout.writelines(colored("%s\n" % "download first.", "red"))
+    except KeyboardInterrupt:
+        sys.stdout.writelines(colored("Canceld by user.\n"), "yellow")
     except Exception as exc:
-        sys.stdout.writelines("%s" % exc)
-        raise exc
+        sys.stdout.writelines(colored("occured %s.\n" % exc), "red")
     else:
-        sys.stdout.writelines("%s" % "all done!!")
+        sys.stdout.writelines(colored("%s\n" % "all done!!"), "green")
