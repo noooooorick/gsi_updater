@@ -48,7 +48,7 @@ def exec_flash():
         reversed_gsi_img_xz_list = sorted(gsi_img_xz_list, reverse=True)
         gsi_img_xz = reversed_gsi_img_xz_list[0]
 
-        if gsi_img_xz.split(".")[-2:] == IMG_XZ:
+        if gsi_img_xz.split(os.extsep)[-2:] == IMG_XZ:
             subprocess.run("unxz %s" % gsi_img_xz, shell=True)
 
         _, gsi_imgs = search_gsi_img(IMG)
