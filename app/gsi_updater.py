@@ -17,7 +17,7 @@ DOT_XZ: str = ".xz"
 IMG_XZ: list[str, str] = ["img", "xz"]
 GSI_TYPE: list[str, str] = ["aosp", "arm64", "ab", "gapps"]
 FILE_TYPE = Literal["xz", "img"]
-DOWNLOADS_DIR: str = r"/downloads/"
+DOWNLOADS_DIR: str = r"../downloads/"
 
 
 def search_gsi_img(filetype: FILE_TYPE) -> tuple[bool, list[str, str]]:
